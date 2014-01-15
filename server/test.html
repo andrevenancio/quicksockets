@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Quicksocket</title>
+    <script src="http://localhost:8080/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <h1>Quicksocket</h1>
+    Room: <input id="room" type="text" name="room" value="140183">
+    <button id="connect" type="button">Connect</button>
+
+    <div id="buttons" style="display: none;">
+      <button id="controllerJoin" type="button">Controller Join</button>
+      <button id="controllerLeave" type="button">Controller Leave</button>
+      <div id="total">0 controllers</div>
+    </div>
+    
+    <script>
+      var bts = document.getElementById('buttons');
+      var room = document.getElementById('room');
+      var total = document.getElementById('total')
+      var bt_connect = document.getElementById('connect');
+      var bt_connect_controller = document.getElementById('controllerJoin');
+      var bt_disconnect_controller = document.getElementById('controllerLeave');
+      var socket = io.connect('http://localhost:8080');
+      var connected = false;
+      var controller = null
+
+      init();
+
+      function init() {
+        bt_connect.addEventListener('click', handleConnectDisconnect, false);
+        bt_connect_controller.addEventListener('click', handleControllerConnect, false);
+        bt_disconnect_controller.addEventListener('click', handleControllerDisconnect, false);
+        
+        socket.on('on-enter-room', function(data) {
+          console.log('entering room', data);
+        });
+
+        socket.on('on-leave-room', function(data) {
+          console.log('leaving room', data);
+        });
+
+        socket.on('on-controller-join', function(data) {
+          console.log('join controller id', data);
+          controller = data;
+        });
+
+        socket.on('on-controller-leave', function(data) {
+          console.log(data);
+        });
+
+        socket.on('on-room-update', function(data) {
+          console.log('room', data);
+        });
+
+      }
+
+     
+
+      function handleConnectDisconnect(e) {
+        e.preventDefault();
+
+        if(connected === false) {
+          room.disabled = true;
+          connected = true;
+          bt_connect.innerHTML = 'disconnect';
+          bts.style.display = 'block';
+
+          socket.emit('enter-room', room.value);
+        } else {
+          room.disabled = null;
+          connected = false;
+          bt_connect.innerHTML = 'connect';
+          bts.style.display = 'none';
+
+          socket.emit('leave-room', room.value);
+        }
+      }
+
+      function handleControllerConnect(e) {
+        e.preventDefault();
+
+        socket.emit('controller-join', room.value);
+      }
+
+      function handleControllerDisconnect(e) {
+        e.preventDefault();
+
+        socket.emit('controller-leave', controller);
+      }
+
+
+    </script>
+  </body>
+</html>

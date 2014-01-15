@@ -1,0 +1,39 @@
+{
+  "name": "Quicksockets",
+  "description": "QuickSocket is a node.js server for rapid prototyping with HTML5 websockets. Quickly! that's it.",
+  "version": "0.0.1",
+  "homepage": "https://github.com/andrevenancio/quicksockets",
+  "author": {
+    "name": "Andre Venancio",
+    "email": "info@andrevenancio.com",
+    "web": "http://andrevenancio.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andrevenancio/quicksockets.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andrevenancio/quicksockets/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/andrevenancio/quicksockets/blob/master/LICENSE"
+    }
+  ],
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "start": "quicksocket.min.js"
+  },
+  "dependencies": {
+    "express": "latest",
+    "socket.io": "latest",
+    "coffee-script": "latest",
+    "ejs": "latest"
+  },
+  "keywords": [
+    "node", "socket.io", "chat", "websockets", "quicksocket", "prototype"
+  ]
+}
