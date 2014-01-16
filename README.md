@@ -12,5 +12,5 @@ npm install
 `
 * run server:
 `
-node server/quicksocket.coffee -n
+coffee server/quicksocket.coffee -n
 `

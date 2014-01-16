@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Quicksocket</title>
+    <link rel="stylesheet" type="text/css" href="css/base.css">
+    <script src="<%= host %>/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <%- header %>
+
+    <fieldset>
+      <legend>Room</legend>
+      <input id="room-id" type="text" value="140183">
+      <button id="connect" type="button">connect</button>
+      <button id="disconnect" type="button" disabled>disconnect</button>
+      <input id="connection-status" type="text" value="disconnected" disabled>
+    </fieldset>
+    
+    <script>
+      var socket = io.connect('<%= host %>');
+      var input = document.getElementById('room-id')
+      var connect = document.getElementById('connect');
+      var disconnect = document.getElementById('disconnect');
+      var cs = document.getElementById('connection-status');
+
+      connect.addEventListener('click', handleConnect, false);
+      disconnect.addEventListener('click', handleDisconnect, false);
+
+      socket.on('enter-room', onEnterRoom);
+      socket.on('leave-room', onLeaveRoom);
+
+      function handleConnect(e) {
+        connect.disabled = true;
+        disconnect.disabled = true;
+        input.disabled = true;
+
+        socket.emit('enter-room', input.value);
+      };
+
+      function handleDisconnect(e) {
+        connect.disabled = true;
+        disconnect.disabled = true;
+        input.disabled = true;
+
+        socket.emit('leave-room', input.value);
+      };
+
+      function onEnterRoom(id) {
+        cs.value = 'connected to ' + id;
+        disconnect.disabled = null;
+      };
+
+      function onLeaveRoom(id) {
+        cs.value = 'disconnected';
+        input.disabled = null;
+        connect.disabled = null;
+      };
+
+    </script>
+
+  </body>
+</html>

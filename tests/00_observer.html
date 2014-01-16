@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Quicksocket</title>
+    <link rel="stylesheet" type="text/css" href="css/base.css">
+    <script src="<%= host %>/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <%- header %>
+
+    <fieldset>
+      <legend>Rooms</legend>
+      <ol id="all-rooms"></ol>
+    </fieldset>
+    <input id="connection-status" type="text" value="disconnected" disabled>
+    
+    <script>
+      var socket = io.connect('<%= host %>');
+      var rooms = document.getElementById('all-rooms')
+      var cs = document.getElementById('connection-status');
+
+      socket.on('observer-log', onObserverLog);
+      socket.on('observer-connect', onObserverConnect);
+
+      socket.emit('observer-connect');
+
+      function onObserverConnect() {
+        cs.value = 'connected';
+      };
+
+      function onObserverLog(log) {
+        //destroys current list
+        rooms.innerHTML = ''
+
+        //adds all current rooms
+        for(var k in log) {
+          rooms.appendChild(getRoom(k, log[k].connections));
+        }
+      };
+
+      function getRoom(name, connections) {
+        var html = '<div class="observer-room-name">'
+        html += ' <strong>name:</strong> ' + name
+        html += ' <strong>connections:</strong> ' + connections
+        html += '</div>'
+
+        var node = document.createElement('li')
+        node.innerHTML = html
+        return node;
+      }
+
+    </script>
+
+  </body>
+</html>

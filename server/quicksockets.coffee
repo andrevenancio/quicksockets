@@ -5,19 +5,26 @@
 do ->
   ROOMS = {};
 
-
   #require
   express = require 'express'
   http = require 'http'
   ejs = require 'ejs'
+  path = require 'path'
+  SETTINGS = require './settings'
+  SETTINGS.host = 'http://localhost:8080'
 
 
+  base = path.normalize(__dirname + "/../tests/")
   #html
   app = express()
-  .set('views', __dirname)
+  .use("/css", express.static(base + "/css"))
+  .use("/img", express.static(base + "/img"))
+  .set('views', base)
   .engine('html', ejs.renderFile)
-  .get '/[a-zA-Z\-\_0-9]{0,6}', (req, res) ->
-    res.render 'test.html'
+  .get('/[a-zA-Z\-\_0-9]{0,6}', (req, res) ->
+    res.render('00_observer.html', SETTINGS))
+  .get('/controller', (req, res) ->
+    res.render('01_controller.html', SETTINGS))
   
 
   #server
@@ -40,38 +47,47 @@ do ->
     socket.on 'disconnect', ->
       socket.get 'controller', (err, controller) ->
         return if controller is null
-        #this guy controller.id left room controller.room
-        updateRoom()
+        #this controller.id left room controller.room
+        updateControllers()
+        updateObserver()
+
+    socket.on 'observer-connect', ->
+      socket.emit 'observer-connect'
+      updateObserver()
+
 
     socket.on 'enter-room', (roomID) ->
       #someone joined the room
       room = getRoom(roomID)
       room.connections++
       socket.join roomID
-      socket.emit 'on-enter-room', roomID
-      updateRoom()
+      socket.emit 'enter-room', roomID
+      updateControllers()
+      updateObserver()
 
 
     socket.on 'leave-room', (roomID) ->
       #someone left the room
       ROOMS[roomID].connections--
       socket.leave roomID
-      socket.emit 'on-leave-room', roomID;
+      socket.emit 'leave-room', roomID;
       if ROOMS[roomID].connections is 0
         #nobody in the room, delete it
         delete(ROOMS[roomID]);
 
-      updateRoom()
+      updateControllers()
+      updateObserver()
 
     socket.on 'controller-join', (roomID) ->
       room = getRoom(roomID)
       controller = room.addController()
       socket.set 'controller', controller
       socket.join roomID
-      socket.emit 'on-controller-join', controller.id
+      socket.emit 'controller-join', controller.id
 
       console.log 'controller', controller.id, 'join', roomID
-      updateRoom()
+      updateControllers()
+      updateObserver()
 
     socket.on 'controller-leave', (controllerID) ->
       controller = getController controllerID
@@ -80,15 +96,20 @@ do ->
       #socket.set('controller', controller);
       socket.leave controller.room
 
-      socket.emit 'on-controller-left', controller.id
+      socket.emit 'controller-left', controller.id
       console.log 'controller', controller.id, 'left', controller.room
       room.removeController controller.id
-      updateRoom()
+      updateControllers()
+      updateObserver()
   
 
-  updateRoom = (roomID) ->
-    io.sockets.in(roomID)
-    .emit('on-room-update', ROOMS);
+  updateControllers = (id) ->
+    io.sockets.in(id)
+    .emit('room-update', ROOMS[id]);
+
+  updateObserver = (socket) ->
+    io.sockets
+    .emit 'observer-log', ROOMS
 
   getRoom = (id) ->
     if ROOMS[id] is undefined
@@ -114,7 +135,7 @@ class Room
     @connections = 0
     @controllers = {}
     @data = {}
-  
+
   addController: ->
     controller = new Controller()
     controller.room = @id

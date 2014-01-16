@@ -4,13 +4,56 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Quicksocket</title>
-    <script src="http://localhost:8080/socket.io/socket.io.js"></script>
+    <script src="<%= host %>/socket.io/socket.io.js"></script>
   </head>
   <body>
-    <h1>Quicksocket</h1>
-    Room: <input id="room" type="text" name="room" value="140183">
-    <button id="connect" type="button">Connect</button>
+    <h1>quicksocket</h1>
+    <p>running on <strong><%= host %></strong></p>
+    <br/>
+    <fieldset>
+      <legend>Debug</legend>
+      <ol id="current-rooms">
+        <li>
+          room:<input type="text" value="142" disabled>
+          client:<input type="text" value="1" disabled>
+          controllers:<input type="text" value="1" disabled>
+          <button type="button">delete room</button>
+        </li>
 
+        <li>
+          room:<input type="text" value="431" disabled>
+          client:<input type="text" value="1" disabled>
+          controllers:<input type="text" value="3" disabled>
+          <button type="button">delete room</button>
+        </li>
+
+        <li>
+          room:<input type="text" value="140183" disabled>
+          client:<input type="text" value="0" disabled>
+          controllers:<input type="text" value="0" disabled>
+          <button type="button">delete room</button>
+        </li>
+      </ol>
+      <!--Room: <input id="room" type="text" value="140183">
+      <button id="connect" type="button">Connect</button>-->
+    </fieldset>
+
+    <fieldset>
+      <legend>Client</legend>
+      <!--Room: <input id="room" type="text" value="140183">
+      <button id="connect" type="button">Connect</button>-->
+    </fieldset>
+
+    <fieldset>
+      <legend>Controller</legend>
+      Room: <input id="room" type="text" value="140183">
+      <button id="connect" type="button">join</button>
+    </fieldset>
+
+
+  
+
+    <div id="holder"></div>
     <div id="buttons" style="display: none;">
       <button id="controllerJoin" type="button">Controller Join</button>
       <button id="controllerLeave" type="button">Controller Leave</button>
