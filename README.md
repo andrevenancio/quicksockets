@@ -13,7 +13,7 @@ Make sure you have both [node.js](http://nodejs.org/) and [npm](https://npmjs.or
 ```shell
 npm install 
 ```
-* Run local Gruntfile
+* run/compile the server
 ```shell
 coffee server/quicksockets.coffee -n
 ```
