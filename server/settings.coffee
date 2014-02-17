@@ -1,2 +1,2 @@
 module.exports =
-  header: '<header>Quicksockets</header>'
+  header: '<!--<header>Quicksockets</header>-->'
